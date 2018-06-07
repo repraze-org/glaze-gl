@@ -1,0 +1,1 @@
+{"version":3,"sources":["base/generic.less","glaze.css"],"names":[],"mappings":";;;;;;AAAA;EACI,gBAAA;CCCH","file":"glaze.css","sourcesContent":["html{\r\n    background: red;\r\n}\r\n","html {\n  background: red;\n}\n"]}

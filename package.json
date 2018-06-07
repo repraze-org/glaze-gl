@@ -1,0 +1,39 @@
+{
+  "name": "glaze",
+  "version": "1.0.0",
+  "description": "CSS Framework for impactful Web Apps",
+  "main": "less/glaze.less",
+  "style": "css/glaze.min.css",
+  "scripts": {
+    "build": "gulp",
+    "watch": "gulp watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/repraze-org/glaze.git"
+  },
+  "keywords": [
+    "css",
+    "less",
+    "framework",
+    "flexbox",
+    "responsive"
+  ],
+  "author": "Thomas Dubosc (http://repraze.com)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/repraze-org/glaze/issues"
+  },
+  "homepage": "https://github.com/repraze-org/glaze#readme",
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-autoprefixer": "^5.0.0",
+    "gulp-clean-css": "^3.9.4",
+    "gulp-header": "^2.0.5",
+    "gulp-less": "^3.5.0",
+    "gulp-plumber": "^1.2.0",
+    "gulp-rename": "^1.2.3",
+    "gulp-sourcemaps": "^2.6.4",
+    "gulp-watch": "^5.0.0"
+  }
+}
