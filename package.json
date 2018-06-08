@@ -6,7 +6,8 @@
   "style": "css/glaze.min.css",
   "scripts": {
     "build": "gulp",
-    "watch": "gulp watch"
+    "watch": "gulp watch",
+    "test": "gulp test"
   },
   "repository": {
     "type": "git",

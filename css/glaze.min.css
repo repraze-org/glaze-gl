@@ -4,4 +4,4 @@
  * Licensed under the MIT (http://opensource.org/licenses/MIT)
  */
 
-html{background:red}
+html{background-color:#fff;overflow-x:hidden;overflow-y:scroll;font-smooth:antialiased;text-rendering:optimizeLegibility;-webkit-text-size-adjust:100%;-moz-text-size-adjust:100%;-ms-text-size-adjust:100%;text-size-adjust:100%}

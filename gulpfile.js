@@ -48,7 +48,7 @@ const options = {
 `,
 };
 
-// Default, used by Travis CI
+// Default
 
 gulp.task('default', ['build', 'build-min']);
 
@@ -80,8 +80,12 @@ gulp.task('build-min', function(){
     return minified;
 });
 
-// Watcher
+// Watch
 
 gulp.task('watch', function () {
-    gulp.watch('./less/**/*.less', ['build', 'build-min']);
+    gulp.watch('./less/**/*.less', ['default']);
 });
+
+// Test, used by Travis CI
+
+gulp.task('test', ['default']);
