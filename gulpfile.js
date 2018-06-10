@@ -21,10 +21,7 @@ const year = (from)=>{
     return to === from ? `${from}` : `${from}-${to}`;
 };
 
-const options = {
-    input   : './less/*.less',
-    output  : './css/',
-    suffix  : '.min',
+const common = {
     plumber : function(err){
         if(!process.env.CI){
             console.log(err);
@@ -50,40 +47,58 @@ const options = {
 
 // Default
 
-gulp.task('default', ['build', 'build-min']);
+gulp.task('default', ['build', 'build-min', 'build-docs']);
 
-// Build tasks
+// Build CSS
 
 gulp.task('build', function(){
-    let extended = gulp.src(options.input)
-        .pipe(plumber(options.plumber))
+    let extended = gulp.src('./less/*.less')
+        .pipe(plumber(common.plumber))
         .pipe(sourcemaps.init())
         .pipe(less())
         .pipe(autoprefixer())
-        .pipe(header(options.header))
+        .pipe(header(common.header))
         .pipe(sourcemaps.write('./'))
-        .pipe(gulp.dest(options.output));
+        .pipe(gulp.dest('./css/'));
 
     return extended;
 });
 
+// Build minified CSS
+
 gulp.task('build-min', function(){
-    let minified = gulp.src(options.input)
-        .pipe(plumber(options.plumber))
+    let minified = gulp.src('./less/*.less')
+        .pipe(plumber(common.plumber))
         .pipe(less())
         .pipe(autoprefixer())
-        .pipe(cleanCSS(options.clean))
-        .pipe(rename({suffix: options.suffix}))
-        .pipe(header(options.header))
-        .pipe(gulp.dest(options.output));
+        .pipe(cleanCSS(common.clean))
+        .pipe(rename({suffix: '.min'}))
+        .pipe(header(common.header))
+        .pipe(gulp.dest('./css/'));
+
+    return minified;
+});
+
+// Build docs
+
+gulp.task('build-docs', function(){
+    let minified = gulp.src('./docs/less/*.less')
+        .pipe(plumber(common.plumber))
+        .pipe(less())
+        .pipe(autoprefixer())
+        .pipe(cleanCSS(common.clean))
+        .pipe(rename({suffix: '.min'}))
+        .pipe(header(common.header))
+        .pipe(gulp.dest('./docs/css/'));
 
     return minified;
 });
 
 // Watch
 
-gulp.task('watch', function () {
+gulp.task('watch', function(){
     gulp.watch('./less/**/*.less', ['default']);
+    gulp.watch('./docs/less/**/*.less', ['build-docs']);
 });
 
 // Test, used by Travis CI
