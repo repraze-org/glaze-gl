@@ -4,7 +4,7 @@
 @body-line-height: 1.5;
 @body-family: Arial;
 @body-color: black;
-@body-weight: 16px;
+@body-weight: normal;
 
 html{
     background-color: @body-background;
@@ -13,4 +13,29 @@ html{
     font-smooth: antialiased;
     text-rendering: optimizeLegibility;
     text-size-adjust: 100%;
+}
+
+article,
+aside,
+figure,
+footer,
+header,
+hgroup,
+section{
+    display: block
+}
+
+body,
+button,
+input,
+select,
+textarea{
+    font-family: @body-family;
+}
+
+body{
+    color: @body-color;
+    font-size: 1rem;
+    font-weight: @body-weight;
+    line-height: @body-line-height;
 }
