@@ -86,6 +86,18 @@
 /************************************************************************/
 /******/ ({
 
+/***/ "./docs-src/src/index.js":
+/*!*******************************!*\
+  !*** ./docs-src/src/index.js ***!
+  \*******************************/
+/*! exports provided: test */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"test\", function() { return test; });\nvar test = \"fsssfs\";\n\n//# sourceURL=webpack:///./docs-src/src/index.js?");
+
+/***/ }),
+
 /***/ "./node_modules/babel-polyfill/lib/index.js":
 /*!**************************************************!*\
   !*** ./node_modules/babel-polyfill/lib/index.js ***!
@@ -3839,13 +3851,13 @@ eval("var g;\n\n// This works in non-strict mode\ng = (function() {\n\treturn th
 /***/ }),
 
 /***/ 0:
-/*!*********************************************!*\
-  !*** multi babel-polyfill ./demo/index.jsx ***!
-  \*********************************************/
+/*!****************************************************!*\
+  !*** multi babel-polyfill ./docs-src/src/index.js ***!
+  \****************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-eval("__webpack_require__(/*! babel-polyfill */\"./node_modules/babel-polyfill/lib/index.js\");\n!(function webpackMissingModule() { var e = new Error(\"Cannot find module './demo/index.jsx'\"); e.code = 'MODULE_NOT_FOUND'; throw e; }());\n\n\n//# sourceURL=webpack:///multi_babel-polyfill_./demo/index.jsx?");
+eval("__webpack_require__(/*! babel-polyfill */\"./node_modules/babel-polyfill/lib/index.js\");\nmodule.exports = __webpack_require__(/*! C:\\Users\\Repraze\\Programming\\node\\glaze\\docs-src\\src\\index.js */\"./docs-src/src/index.js\");\n\n\n//# sourceURL=webpack:///multi_babel-polyfill_./docs-src/src/index.js?");
 
 /***/ })
 
