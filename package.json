@@ -1,57 +1,57 @@
 {
-  "name": "glaze",
-  "version": "1.0.0",
-  "description": "CSS Framework for impactful Web Apps",
-  "main": "less/glaze.less",
-  "style": "css/glaze.min.css",
-  "scripts": {
-    "build": "node ./docs-src/build.js",
-    "build-watch": "webpack --mode=development --watch",
-    "lint": "eslint .",
-    "lint-fix": "eslint --fix ."
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/repraze-org/glaze.git"
-  },
-  "keywords": [
-    "css",
-    "sass",
-    "scss",
-    "react",
-    "app",
-    "framework",
-    "flexbox",
-    "responsive"
-  ],
-  "author": "Thomas Dubosc (http://repraze.com)",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/repraze-org/glaze/issues"
-  },
-  "homepage": "https://github.com/repraze-org/glaze#readme",
-  "devDependencies": {
-    "@babel/cli": "^7.5.5",
-    "@babel/core": "^7.5.5",
-    "@babel/plugin-proposal-object-rest-spread": "^7.5.5",
-    "@babel/preset-env": "^7.5.5",
-    "@babel/preset-react": "^7.0.0",
-    "babel-eslint": "^10.0.2",
-    "babel-loader": "^8.0.6",
-    "babel-polyfill": "^6.26.0",
-    "eslint": "^6.2.1",
-    "eslint-plugin-react": "^7.14.3",
-    "finalhandler": "^1.1.2",
-    "husky": "^3.0.4",
-    "open": "^6.4.0",
-    "prop-types": "^15.7.2",
-    "react": "^16.9.0",
-    "react-dom": "^16.9.0",
-    "sass": "^1.22.10",
-    "sass-loader": "^7.3.1",
-    "serve-static": "^1.14.1",
-    "style-loader": "^1.0.0",
-    "webpack": "^4.39.2",
-    "webpack-cli": "^3.3.7"
-  }
+    "name": "glaze",
+    "version": "1.0.0",
+    "description": "CSS Framework for impactful Web Apps",
+    "main": "less/glaze.less",
+    "style": "css/glaze.min.css",
+    "scripts": {
+        "build": "node ./docs-src/build ./docs-src/docs.config.js",
+        "build-watch": "webpack --mode=development --watch",
+        "lint": "eslint .",
+        "lint-fix": "eslint --fix ."
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/repraze-org/glaze.git"
+    },
+    "keywords": [
+        "css",
+        "sass",
+        "scss",
+        "react",
+        "app",
+        "framework",
+        "flexbox",
+        "responsive"
+    ],
+    "author": "Thomas Dubosc (http://repraze.com)",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/repraze-org/glaze/issues"
+    },
+    "homepage": "https://github.com/repraze-org/glaze#readme",
+    "devDependencies": {
+        "@babel/cli": "^7.5.5",
+        "@babel/core": "^7.5.5",
+        "@babel/plugin-proposal-object-rest-spread": "^7.5.5",
+        "@babel/preset-env": "^7.5.5",
+        "@babel/preset-react": "^7.0.0",
+        "babel-eslint": "^10.0.2",
+        "babel-loader": "^8.0.6",
+        "babel-polyfill": "^6.26.0",
+        "eslint": "^6.2.2",
+        "eslint-plugin-react": "^7.14.3",
+        "finalhandler": "^1.1.2",
+        "husky": "^3.0.4",
+        "open": "^6.4.0",
+        "prop-types": "^15.7.2",
+        "react": "^16.9.0",
+        "react-dom": "^16.9.0",
+        "sass": "^1.22.10",
+        "sass-loader": "^7.3.1",
+        "serve-static": "^1.14.1",
+        "style-loader": "^1.0.0",
+        "webpack": "^4.39.2",
+        "webpack-cli": "^3.3.7"
+    }
 }
