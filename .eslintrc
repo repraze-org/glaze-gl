@@ -1,11 +1,8 @@
 {
     "parser": "babel-eslint",
-    "extends": [
-        "eslint:recommended",
-        "plugin:react/recommended"
-    ],
+    "extends": ["eslint:recommended", "plugin:react/recommended"],
     "env": {
-        "browser": false,
+        "browser": true,
         "mocha": true,
         "node": true,
         "es6": true
@@ -29,6 +26,7 @@
             }
         ],
         "indent": ["error", 4],
+        "quotes": ["error", "double"],
         "one-var": ["error", "never"],
         "semi": ["error", "always"],
         "semi-spacing": [

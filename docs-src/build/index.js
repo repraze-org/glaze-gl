@@ -1,31 +1,46 @@
 const path = require("path");
-const fs = require("fs").promises;
 const http = require("http");
+const parseArgs = require("minimist");
 const finalhandler = require("finalhandler");
 const open = require("open");
 const webpack = require("webpack");
 const serveStatic = require("serve-static");
-const fileUtils = require("./file-utils");
 
-async function build(config){
-    config.mode = "development"; // "production" | "development" | "none"
-    config.watch = true;
+const logger = require("./logger");
+const {File, Directory} = require("./file-utils");
 
-    const compiler = webpack(config);
-    await new Promise((res, rej)=>{
-        compiler.watch(
-            {
-                aggregateTimeout: 1,
-                ignored:          /node_modules/
-            },
-            (err, stats)=>{
-                res();
-                if(err || stats.hasErrors()){
-                    // TODO
+async function build(params, config, handler){
+    config.buildConfig.mode = config.buildConfig.mode || params.mode || "production";
+    const compiler = webpack(config.buildConfig);
+    if(params.watch){
+        await new Promise((res, rej)=>{
+            compiler.watch(
+                {
+                    aggregateTimeout: 1,
+                    ignored:          /node_modules/
+                },
+                (err, stats)=>{
+                    if(err){
+                        rej(err);
+                    }else{
+                        handler(err, stats);
+                        res(stats);
+                    }
                 }
-            }
-        );
-    });
+            );
+        });
+    }else{
+        await new Promise((res, rej)=>{
+            compiler.run((err, stats)=>{
+                if(err){
+                    rej(err);
+                }else{
+                    handler(err, stats);
+                    res(stats);
+                }
+            });
+        });
+    }
     return compiler;
 }
 
@@ -38,55 +53,75 @@ async function launch(destination, port){
     server.listen(port);
 }
 
-async function watch(compiler, invalidNext, validNext){
-    const {compile, invalid, done} = compiler.hooks;
-    const name = "glaze-reload-watch";
+async function run(prm){
+    const params = Object.assign(
+        {
+            run:    false,
+            watch:  true,
+            mode:   "development",
+            port:   8081,
+            config: "./docs.config.js"
+        },
+        prm
+    );
 
-    compile.tap(name, invalidNext);
-    invalid.tap(name, invalidNext);
-    done.tap(name, stats=>{
-        validNext(stats);
-    });
-}
-
-async function run(configSrc){
-    const configPath = path.resolve(configSrc || "./docs.config.js");
-    if(!fileUtils.file.exists(configPath)){
+    const configPath = path.resolve(params.config);
+    if(!File.exists(configPath)){
         throw new Error("Could not find config file.");
     }
     const config = require(configPath);
 
-    const port = 8080;
+    const port = params.port;
     const host = `http://localhost:${port}`;
 
-    console.log(`Building Glaze Docs`);
+    logger.info("Building Glaze Docs");
 
-    console.log(`Cleaning ${config.destination}`);
-    await fileUtils.directory.empty(config.destination);
+    logger.info(`Cleaning ${config.destination}`);
+    await Directory.empty(config.destination);
 
-    console.log(`Copying static files`);
-    await fileUtils.directory.copy(config.static, config.destination);
+    logger.info("Copying static files");
+    await Directory.copy(config.static, config.destination);
 
-    console.log(`Building project`);
-    const compiler = await build(config.buildConfig);
-
-    console.log(`Launching dev server on ${port}`);
-    await launch(config.destination, port);
-
-    console.log(`Opening browser`);
-    await open(host);
-
-    console.log(`Listening for changes`);
-    await watch(
-        compiler,
-        params=>{
-            console.log(`Project build failed`);
-        },
-        params=>{
-            console.log(`Project updated, reloading`);
+    function handler(err, stats){
+        if(err){
+            logger.error(err);
         }
-    );
+
+        if(stats && (stats.hasErrors() || stats.hasWarnings())){
+            const {errors, warnings} = stats.toJson();
+
+            errors.forEach(e=>logger.error(e));
+            warnings.forEach(w=>logger.error(w));
+        }
+
+        if(!err && !stats.hasErrors() && !stats.hasWarnings()){
+            logger.info("Project built");
+        }
+    }
+
+    logger.info("Building project");
+    await build(params, config, handler);
+
+    if(params.run){
+        logger.info(`Launching dev server on ${port}`);
+        await launch(config.destination, port);
+
+        logger.info("Opening browser");
+        await open(host);
+
+        if(params.watch){
+            logger.info("Listening for changes");
+        }
+    }
 }
 
-const args = process.argv.slice(2);
-run(args[0]);
+const args = parseArgs(process.argv.slice(2), {
+    alias: {
+        run:    "r",
+        watch:  "w",
+        mode:   "m",
+        config: "c",
+        port:   "p"
+    }
+});
+run(args);
