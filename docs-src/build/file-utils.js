@@ -22,6 +22,10 @@ class Directory{
         }
     }
     static async copy(source, destination){
+        if(!(await Directory.exists(destination))){
+            await fs.mkdir(destination);
+        }
+
         const files = await fs.readdir(source);
         for(let i = 0; i < files.length; i++){
             const file = files[i];
@@ -37,6 +41,10 @@ class Directory{
         }
     }
     static async empty(destination){
+        if(!(await Directory.exists(destination))){
+            return;
+        }
+
         const files = await fs.readdir(destination);
         for(let i = 0; i < files.length; i++){
             const file = files[i];

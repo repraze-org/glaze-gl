@@ -57,7 +57,7 @@ async function run(prm){
     const params = Object.assign(
         {
             run:    false,
-            watch:  true,
+            watch:  false,
             mode:   "development",
             port:   8081,
             config: "./docs.config.js"
