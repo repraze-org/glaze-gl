@@ -62,3 +62,6 @@ typings/
 
 # glaze gen docs
 docs/
+
+# npm local config
+.npmrc

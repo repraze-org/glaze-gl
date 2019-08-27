@@ -1,15 +1,15 @@
-const path = require('path');
+const path = require("path");
 
 module.exports = {
     entry: [
-        'babel-polyfill',
-        path.resolve(__dirname, 'src', 'index.js'),
+        "babel-polyfill",
+        path.resolve(__dirname, "src", "index.js"),
     ],
     output: {
-        filename:      'bundle.js',
-        path:          path.resolve(__dirname, '..', 'docs', 'js'),
-        publicPath:    'js/',
-        chunkFilename: '[name].chunk.js',
+        filename:      "bundle.js",
+        path:          path.resolve(__dirname, "..", "docs", "js"),
+        publicPath:    "js/",
+        chunkFilename: "[name].chunk.js",
     },
     module: {
         rules: [
@@ -41,13 +41,13 @@ module.exports = {
         ]
     },
     resolve: {
-        extensions: ['.js', '.jsx', '.json'],
+        extensions: [".js", ".jsx", ".json"],
         modules:    [
-            'node_modules',
-            './src'
+            "node_modules",
+            "./src"
         ],
         alias: {
-            'glaze': path.resolve(__dirname),
+            "glaze": path.resolve(__dirname),
         }
     }
 };
