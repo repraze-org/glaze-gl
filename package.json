@@ -44,6 +44,7 @@
         "babel-eslint": "^10.0.2",
         "babel-loader": "^8.0.6",
         "babel-polyfill": "^6.26.0",
+        "css-loader": "^3.2.0",
         "eslint": "^6.2.2",
         "eslint-plugin-react": "^7.14.3",
         "finalhandler": "^1.1.2",
