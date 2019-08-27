@@ -4,3 +4,12 @@ node_js:
 script:
     - npm run lint
     - npm run build
+deploy:
+    # deploy docs to gh-pages
+    provider: pages
+    skip_cleanup: true
+    github_token: $GITHUB_TOKEN
+    keep_history: false
+    local_dir: docs
+    on:
+        branch: master
