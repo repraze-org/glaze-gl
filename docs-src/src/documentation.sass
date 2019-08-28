@@ -1,3 +1,4 @@
+@import "glaze"
 
 $docs-width: 1100px
 $docs-padding: 40px
@@ -25,10 +26,10 @@ $docs-nav-width: 300px
             background-color: $white
             box-sizing: border-box
             height: 100vh
-            margin-left: -shift
+            margin-left: -$shift
             overflow-x: hidden
             overflow-y: auto
-            padding: $docs-padding docs-padding docs-padding shift+docs-padding
+            padding: $docs-padding $docs-padding $docs-padding ($shift+$docs-padding)
             position: fixed
             width: $docs-nav-width + shift
 

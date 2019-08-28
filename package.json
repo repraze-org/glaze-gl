@@ -8,11 +8,10 @@
         "build": "node ./docs-src/build -c ./docs-src/docs.config.js",
         "build-watch": "node ./docs-src/build -c ./docs-src/docs.config.js -rw",
         "lint": "npm run lint-code && npm run lint-style",
-        "lint-fix": "npm run lint-code-fix && npm run lint-style-fix",
+        "lint-fix": "npm run lint-code-fix",
         "lint-code": "eslint .",
         "lint-code-fix": "eslint --fix .",
-        "lint-style": "stylelint **/**.sass",
-        "lint-style-fix": "stylelint --fix **/**.sass"
+        "lint-style": "stylelint **/**.sass"
     },
     "husky": {
         "hooks": {
