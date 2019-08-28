@@ -48,7 +48,8 @@ module.exports = {
         extensions: [".js", ".jsx", ".json"],
         modules:    ["node_modules", "./src"],
         alias:      {
-            glaze: path.resolve(__dirname, "..")
+            glaze: path.resolve(__dirname, ".."),
+            docs:  path.resolve(__dirname, "build", "client"),
         }
     }
 };
