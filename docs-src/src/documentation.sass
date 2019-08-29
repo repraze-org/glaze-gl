@@ -4,6 +4,12 @@ $docs-width: 1100px
 $docs-padding: 40px
 $docs-nav-width: 300px
 
+$primary: $pink
+
+body
+    font-family: $font-primary
+    font-size: 16px
+
 .docs-root
     background-color: $grey-lighter
     position: relative
@@ -35,6 +41,21 @@ $docs-nav-width: 300px
             padding: $docs-padding $docs-padding $docs-padding ($shift+$docs-padding)
             position: fixed
             width: $docs-nav-width + $shift
+
+    .docs-nav-menu
+        .docs-nav-menu
+            margin-left: $docs-padding / 2
+
+    .docs-nav-item
+        color: $grey-dark
+        line-height: $docs-padding / 2
+        text-decoration: none
+
+        &.active
+            color: $primary
+
+    .docs-nav-chapter
+        font-weight: 500
 
     .docs-content
         flex-grow: 1

@@ -1,13 +1,39 @@
 import React from "react";
 import PropTypes from "prop-types";
-import {Route, Link} from "react-router-dom";
+import {Route, NavLink} from "react-router-dom";
 
-import {Book} from "docs";
+import {Book, Chapter} from "docs";
 
 import Logo from "./logo";
 
+function ChapterNavigation({
+    chapter
+}){
+    const {pages, chapters} = chapter;
+    if(pages.length === 0 && chapters.length === 0){
+        return null;
+    }
+    return <ul className="docs-nav-menu">
+        {pages.map(page=>(
+            <li key={page.key}>
+                <NavLink exact className="docs-nav-item docs-nav-page" activeClassName="active" to={`${chapter.path}.${page.key}`}>{page.name}</NavLink>
+            </li>
+        ))}
+        {chapters.map(chapter=>(
+            <li key={chapter.key}>
+                <NavLink exact className="docs-nav-item docs-nav-chapter" activeClassName="active" to={`${chapter.path}`}>{chapter.name}</NavLink>
+                <ChapterNavigation chapter={chapter}/>
+            </li>
+        ))}
+    </ul>;
+}
+
+ChapterNavigation.propTypes = {
+    chapter: PropTypes.instanceOf(Chapter)
+};
+
 export default function Navigagtion({documentation}){
-    console.log(documentation.chapters());
+    const {chapters} = documentation;
     return (
         <div className="docs-nav">
             <div className="docs-nav-scroller">
@@ -16,28 +42,17 @@ export default function Navigagtion({documentation}){
                         <Logo />
                     </span>
                     <span className="docs-name" title="Glaze">
-                        <Link to={"/"}>Glaze</Link>
+                        <NavLink exact to={"/"}>Glaze</NavLink>
                     </span>
                 </div>
                 <ul className="docs-nav-menu">
-                    {documentation.chapters().map(chapter=>(
+                    {chapters.map(chapter=>(
                         <li key={chapter.key}>
-                            <Link to={chapter.path}><strong>{chapter.name}</strong></Link>
+                            <NavLink exact className="docs-nav-item docs-nav-chapter" activeClassName="active" to={chapter.path}>{chapter.name}</NavLink>
                             <Route
                                 path={`${chapter.path}.:view?`}
                                 component={()=>(
-                                    <ul className="docs-nav-menu">
-                                        {chapter.pages().map(page=>(
-                                            <li key={page.key}>
-                                                <Link to={`${chapter.path}.${page.key}`}>{page.name}</Link>
-                                            </li>
-                                        ))}
-                                        {chapter.chapters().map(chapter=>(
-                                            <li key={chapter.key}>
-                                                <Link to={`${chapter.path}`}><strong>{chapter.name}</strong></Link>
-                                            </li>
-                                        ))}
-                                    </ul>
+                                    <ChapterNavigation chapter={chapter}/>
                                 )}
                             />
                         </li>

@@ -29,7 +29,7 @@ export default docs=>{
             </div>
         ));
 
-    docs.chapter("Button/Group")
+    docs.chapter("Button/Group/Test")
         .page("index", ()=>(
             <div>
                 <Button>test</Button>

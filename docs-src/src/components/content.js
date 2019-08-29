@@ -9,7 +9,7 @@ import Chapter from "./chapter";
 export default function Content({documentation}){
     return (
         <div className="docs-content">
-            <Route path={"/"} exact component={()=><Chapter title="Glaze" chapter={documentation.index()} />} />
+            <Route path={"/"} exact component={()=><Chapter title="Glaze" chapter={documentation.index} />} />
             {documentation.deepChapters().map(chapter=>(
                 <Route
                     key={chapter.key}

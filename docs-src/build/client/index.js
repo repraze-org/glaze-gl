@@ -61,13 +61,13 @@ export class Chapter{
             }
         };
     }
-    index(){
+    get index(){
         return this._index;
     }
-    chapters(){
+    get chapters(){
         return Array.from(this._chapters.values());
     }
-    pages(){
+    get pages(){
         return this._pages;
     }
     deepChapters(){
@@ -125,10 +125,10 @@ export class Book{
             }
         };
     }
-    index(){
+    get index(){
         return this._index;
     }
-    chapters(){
+    get chapters(){
         return Array.from(this._chapters.values());
     }
     deepChapters(){
