@@ -2,11 +2,12 @@ import React from "react";
 import PropTypes from "prop-types";
 import {Route, Link} from "react-router-dom";
 
-import {Documentation} from "docs";
+import {Book} from "docs";
 
 import Logo from "./logo";
 
 export default function Navigagtion({documentation}){
+    console.log(documentation.chapters());
     return (
         <div className="docs-nav">
             <div className="docs-nav-scroller">
@@ -21,10 +22,9 @@ export default function Navigagtion({documentation}){
                 <ul className="docs-nav-menu">
                     {documentation.chapters().map(chapter=>(
                         <li key={chapter.key}>
-                            <Link to={chapter.path}>{chapter.name}</Link>
+                            <Link to={chapter.path}><strong>{chapter.name}</strong></Link>
                             <Route
-                                path={`${chapter.path}.:id?`}
-                                exact
+                                path={`${chapter.path}.:view?`}
                                 component={()=>(
                                     <ul className="docs-nav-menu">
                                         {chapter.pages().map(page=>(
@@ -34,7 +34,7 @@ export default function Navigagtion({documentation}){
                                         ))}
                                         {chapter.chapters().map(chapter=>(
                                             <li key={chapter.key}>
-                                                <Link to={`${chapter.path}`}>{chapter.name}</Link>
+                                                <Link to={`${chapter.path}`}><strong>{chapter.name}</strong></Link>
                                             </li>
                                         ))}
                                     </ul>
@@ -49,5 +49,5 @@ export default function Navigagtion({documentation}){
 }
 
 Navigagtion.propTypes = {
-    documentation: PropTypes.instanceOf(Documentation)
+    documentation: PropTypes.instanceOf(Book)
 };

@@ -28,4 +28,15 @@ export default docs=>{
                     .join(" ")}
             </div>
         ));
+
+    docs.chapter("Button/Group")
+        .page("index", ()=>(
+            <div>
+                <Button>test</Button>
+                {Array(5000)
+                    .fill(null)
+                    .map(w=>"test")
+                    .join(" ")}
+            </div>
+        ));
 };

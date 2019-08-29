@@ -1,117 +1,142 @@
-const SYM = Object.freeze({
-    LOOKUP:   Symbol("lookup"),
-    CHAPTERS: Symbol("chapter"),
-    PAGES:    Symbol("pages"),
-    INDEX:    Symbol("index")
-});
+function parsePath(namePath){
+    return namePath
+        .split("/")
+        .map(name=>name.trim());
+}
 
-function makeKey(str){
-    return str
+function parseKey(name){
+    return name
         .trim()
         .toLocaleLowerCase()
         .replace(/\s+/g, "-");
 }
 
-function makePath(str){
-    return str.split("/").map(s=>makeKey(s));
+export class Page{
+    constructor(name, component){
+        this.name = name;
+        this.key = parseKey(name);
+        this.component = component;
+    }
 }
 
 export class Chapter{
     constructor(name, path){
         this.name = name;
-        this.key = makeKey(name);
+        this._path = path;
+
+        this.key = parseKey(name);
         this.path = "/" + path.join("/");
 
-        this[SYM.INDEX] = null;
-        this[SYM.PAGES] = [];
-        this[SYM.CHAPTERS] = new Map();
-    }
-    page(name, component){
-        const section = new Page(name, component);
-        if(name === "index"){
-            this[SYM.INDEX] = section;
-        }else{
-            this[SYM.PAGES].push(section);
-        }
-        return this;
-    }
-    index(){
-        return this[SYM.INDEX];
-    }
-    pages(){
-        return this[SYM.PAGES];
-    }
-    chapters(){
-        return Array.from(this[SYM.CHAPTERS].values());
-    }
-}
+        this._index = null;
+        this._pages = [];
+        this._chapters = new Map();
 
-export class Page{
-    constructor(name, component){
-        this.name = name;
-        this.key = makeKey(name);
-        this.component = component;
     }
-}
-
-export class Documentation{
-    constructor(){
-        this[SYM.INDEX] = null;
-        this[SYM.CHAPTERS] = new Map();
-        this[SYM.LOOKUP] = new Map();
-    }
-    load(loader){
-        const context = {
-            chapter: (name, config)=>{
-                if(name === "index"){
-                    const chapter = new Chapter("index", []);
-                    this[SYM.INDEX] = chapter;
-                    return chapter;
+    context(){
+        return {
+            chapter: (namePath)=>{
+                const path = parsePath(namePath);
+                const [name, ...restPath] = path;
+                if(restPath.length > 0){
+                    if(!this._chapters.has(name)){
+                        this._chapters.set(name, new Chapter(name, [...this._path, name]));
+                    }
+                    const restNamePath = restPath.join("/");
+                    return this._chapters.get(name).context().chapter(restNamePath);
+                }else{
+                    if(!this._chapters.has(name)){
+                        this._chapters.set(name, new Chapter(name, [...this._path, name]));
+                    }
+                    return this._chapters.get(name).context();
                 }
-
-                const path = makePath(name);
-                const key = path.join("/");
-
-                // compute all leading paths
-                const paths = path.reduce((paths, key)=>{
-                    let path = [key];
-                    if(paths.length > 0){
-                        path = paths[paths.length - 1].slice();
-                        path.push(key);
-                    }
-                    paths.push(path);
-                    return paths;
-                }, []);
-                // add chapters if missing
-                paths.forEach(path=>{
-                    const key = path.join("/");
-                    const parentKey = path.slice(0, -1).join("/");
-                    const name = path[path.length - 1];
-                    if(!this[SYM.LOOKUP].has(key)){
-                        const chapter = new Chapter(name, path);
-                        this[SYM.LOOKUP].set(name, chapter);
-                        if(parentKey === ""){
-                            this[SYM.CHAPTERS].set(name, chapter);
-                        }else{
-                            this[SYM.LOOKUP].get(parentKey)[SYM.CHAPTERS].set(name, chapter);
-                        }
-                    }
-                });
-                return this[SYM.LOOKUP].get(key);
+            },
+            page: (name, component)=>{
+                const page = new Page(name, component);
+                if(name === "index"){
+                    this._index = page;
+                }else{
+                    this._pages.push(page);
+                }
+                return this.context();
             }
         };
-
-        loader.keys().forEach(filename=>{
-            const loaded = loader(filename);
-            if(loaded && loaded.default){
-                loaded.default(context);
-            }
-        });
     }
     index(){
-        return this[SYM.INDEX];
+        return this._index;
     }
     chapters(){
-        return Array.from(this[SYM.CHAPTERS].values());
+        return Array.from(this._chapters.values());
+    }
+    pages(){
+        return this._pages;
+    }
+    deepChapters(){
+        const chapters = Array.from(this._chapters.values());
+        chapters
+            .forEach(chapter=>{
+                chapters.push(...chapter.deepChapters());
+            });
+        return chapters;
+    }
+}
+
+export class Book{
+    constructor(){
+        this._index = new Chapter("index", ["index"]);
+        this._chapters = new Map();
+    }
+    load(loader){
+        const context = this.context();
+        loader.keys()
+            .forEach(filename=>{
+                const loaded = loader(filename);
+                if(loaded && loaded.default){
+                    loaded.default(context);
+                }
+            });
+    }
+    context(){
+        return {
+            chapter: (namePath)=>{
+                const path = parsePath(namePath);
+                const [name, ...restPath] = path;
+
+                if(name === "index"){
+                    if(restPath.length > 0){
+                        const restNamePath = restPath.join("/");
+                        return this._index.context().chapter(restNamePath);
+                    }else{
+                        return this._index.context();
+                    }
+                }
+
+                if(restPath.length > 0){
+                    if(!this._chapters.has(name)){
+                        this._chapters.set(name, new Chapter(name, [name]));
+                    }
+                    const restNamePath = restPath.join("/");
+                    return this._chapters.get(name).context().chapter(restNamePath);
+                }else{
+                    if(!this._chapters.has(name)){
+                        this._chapters.set(name, new Chapter(name, [name]));
+                    }
+                    return this._chapters.get(name).context();
+                }
+            }
+        };
+    }
+    index(){
+        return this._index;
+    }
+    chapters(){
+        return Array.from(this._chapters.values());
+    }
+    deepChapters(){
+        const chapters = Array.from(this._chapters.values());
+        chapters
+            .forEach(chapter=>{
+                chapters.push(...chapter.deepChapters());
+            });
+        return chapters;
     }
 }

@@ -5,7 +5,7 @@ import {HashRouter as Router} from "react-router-dom";
 
 import "./documentation.sass";
 
-import {Documentation} from "docs";
+import {Book} from "docs";
 
 import Navigagtion from "./components/navigation";
 import Content from "./components/content";
@@ -24,14 +24,12 @@ function GlazeDoc({documentation}){
 }
 
 GlazeDoc.propTypes = {
-    documentation: PropTypes.instanceOf(Documentation)
+    documentation: PropTypes.instanceOf(Book)
 };
 
 function docs(root){
-    const documentation = new Documentation();
+    const documentation = new Book();
     documentation.load(require.context("../../src", true, /.docs.js$/));
-
-    console.log(documentation);
 
     ReactDOM.render(<GlazeDoc documentation={documentation} />, root);
 }
