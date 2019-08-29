@@ -1,11 +1,7 @@
 import React from "react";
 
-export default (docs)=>{
-    docs.page("index")
-        .section("index", ()=><div>
-            main docs
-        </div>)
-        .section("icon", ()=><div>
-            test
-        </div>);
+export default docs=>{
+    docs.chapter("index")
+        .page("index", ()=><div>main docs</div>)
+        .page("icon", ()=><div>test</div>);
 };

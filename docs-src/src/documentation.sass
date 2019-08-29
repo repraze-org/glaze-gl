@@ -17,6 +17,8 @@ $docs-nav-width: 300px
 
     .docs-nav
         flex-basis: $docs-nav-width
+        flex-grow: 0
+        flex-shrink: 0
         overflow: hidden
         position: relative
 
@@ -37,4 +39,5 @@ $docs-nav-width: 300px
     .docs-content
         flex-grow: 1
         flex-shrink: 1
+        max-width: $docs-width - $docs-nav-width
         padding: $docs-padding
