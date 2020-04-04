@@ -52,7 +52,7 @@
         "eslint-plugin-react": "^7.14.3",
         "finalhandler": "^1.1.2",
         "husky": "^3.0.4",
-        "minimist": "^1.2.0",
+        "minimist": "^1.2.3",
         "open": "^6.4.0",
         "prop-types": "^15.7.2",
         "react": "^16.9.0",
