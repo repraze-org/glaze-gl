@@ -1,5 +1,5 @@
 {
-    "name": "glazegl",
+    "name": "glaze-gl",
     "version": "0.0.1",
     "description": "Typescript webGL 3D library",
     "main": "lib/cjs/index.js",
@@ -30,6 +30,7 @@
     "keywords": [
         "3d",
         "glazegl",
+        "glaze-gl",
         "glaze",
         "webgl",
         "framework",
@@ -39,12 +40,12 @@
     ],
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/repraze-org/glaze.git"
+        "url": "git+https://github.com/repraze-org/glaze-gl.git"
     },
     "bugs": {
-        "url": "https://github.com/repraze-org/glaze/issues"
+        "url": "https://github.com/repraze-org/glaze-gl/issues"
     },
-    "homepage": "https://github.com/repraze-org/glaze#readme",
+    "homepage": "https://github.com/repraze-org/glaze-gl#readme",
     "devDependencies": {
         "@types/jest": "^26.0.20",
         "@typescript-eslint/eslint-plugin": "^4.12.0",
