@@ -1,7 +1,5 @@
-import {sample} from "../";
-
 describe("delta-time", () => {
     test("should return calculate as default", () => {
-        expect(sample).toEqual("sample");
+        expect("sample").toEqual("sample");
     });
 });
