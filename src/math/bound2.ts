@@ -9,7 +9,7 @@ export class Bound2 {
         this.w = w;
         this.h = h;
     }
-    full() {
+    full(): void {
         this.x = 0;
         this.y = 0;
         this.w = 1;

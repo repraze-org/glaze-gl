@@ -1,6 +1,7 @@
 import {Disposable} from "./interfaces/disposable";
 import {Shader} from "./shader";
 import {ShaderLibrary} from "./shader-library";
+import {RenderingState} from "./rendering-state";
 import {
     ShaderUniform,
     FloatUniform,
@@ -13,37 +14,81 @@ import {
     Matrix4Uniform,
     Sampler2DUniform,
 } from "./shader-uniform";
+import {ShaderAttribute, Vec2Attribute, Vec3Attribute, Vec4Attribute} from "./shader-attribute";
 
-function createUniformHook(
-    gl: WebGLRenderingContext,
-    info: WebGLActiveInfo,
-    location: WebGLUniformLocation,
-): ShaderUniform {
+interface UniformInfo {
+    info: WebGLActiveInfo;
+    location: WebGLUniformLocation;
+}
+
+function createUniformHooks(gl: WebGLRenderingContext, uniforms: UniformInfo[]): {[name: string]: ShaderUniform} {
+    const output: {[name: string]: ShaderUniform} = {};
+    let textureCount = 0;
+    for (let i = 0; i < uniforms.length; i++) {
+        const {info, location} = uniforms[i];
+        switch (info.type) {
+            // primitive
+            case gl.BOOL:
+                output[info.name] = new BoolUniform(gl, info.name, location);
+                break;
+            case gl.INT:
+                output[info.name] = new IntUniform(gl, info.name, location);
+                break;
+            case gl.FLOAT:
+                output[info.name] = new FloatUniform(gl, info.name, location);
+                break;
+            // vectors
+            case gl.FLOAT_VEC2:
+                output[info.name] = new Vec2Uniform(gl, info.name, location);
+                break;
+            case gl.FLOAT_VEC3:
+                output[info.name] = new Vec3Uniform(gl, info.name, location);
+                break;
+            case gl.FLOAT_VEC4:
+                output[info.name] = new Vec4Uniform(gl, info.name, location);
+                break;
+            // matrices
+            case gl.FLOAT_MAT3:
+                output[info.name] = new Matrix3Uniform(gl, info.name, location);
+                break;
+            case gl.FLOAT_MAT4:
+                output[info.name] = new Matrix4Uniform(gl, info.name, location);
+                break;
+            // samplers
+            case gl.SAMPLER_2D:
+                output[info.name] = new Sampler2DUniform(gl, info.name, location, textureCount);
+                textureCount += 1;
+                break;
+            default:
+                throw new Error(`Unrecognized type "${info.type}" for uniform "${info.name}" shader program`);
+        }
+    }
+    return output;
+}
+
+function createAttributeHook(gl: WebGLRenderingContext, info: WebGLActiveInfo, location: number): ShaderAttribute {
     switch (info.type) {
         // primitive
-        case gl.BOOL:
-            return new BoolUniform(gl, info.name, location);
-        case gl.INT:
-            return new IntUniform(gl, info.name, location);
-        case gl.FLOAT:
-            return new FloatUniform(gl, info.name, location);
+        // case gl.BOOL:
+        //     return new BoolUniform(gl, info.name, location);
+        // case gl.INT:
+        //     return new IntUniform(gl, info.name, location);
+        // case gl.FLOAT:
+        //     return new FloatUniform(gl, info.name, location);
         // vectors
         case gl.FLOAT_VEC2:
-            return new Vec2Uniform(gl, info.name, location);
+            return new Vec2Attribute(gl, info.name, location);
         case gl.FLOAT_VEC3:
-            return new Vec3Uniform(gl, info.name, location);
+            return new Vec3Attribute(gl, info.name, location);
         case gl.FLOAT_VEC4:
-            return new Vec4Uniform(gl, info.name, location);
+            return new Vec4Attribute(gl, info.name, location);
         // matrices
-        case gl.FLOAT_MAT3:
-            return new Matrix3Uniform(gl, info.name, location);
-        case gl.FLOAT_MAT4:
-            return new Matrix4Uniform(gl, info.name, location);
-        // samplers
-        case gl.SAMPLER_2D:
-            return new Sampler2DUniform(gl, info.name, location);
+        // case gl.FLOAT_MAT3:
+        //     return new Matrix3Uniform(gl, info.name, location);
+        // case gl.FLOAT_MAT4:
+        //     return new Matrix4Uniform(gl, info.name, location);
         default:
-            throw new Error(`Unrecognized type "${info.type}" for uniform "${info.name}" shader program`);
+            throw new Error(`Unrecognized type "${info.type}" for attribute "${info.name}" shader program`);
     }
 }
 
@@ -54,7 +99,7 @@ export class ShaderProgram implements Disposable {
     private fs: Shader;
 
     public uniforms: {[name: string]: ShaderUniform};
-    public attributes: {[name: string]: number};
+    public attributes: {[name: string]: ShaderAttribute};
 
     constructor(gl: WebGLRenderingContext, {vs, fs, library}: {vs: string; fs: string; library?: ShaderLibrary}) {
         this.gl = gl;
@@ -84,45 +129,50 @@ export class ShaderProgram implements Disposable {
             throw new Error(`Could not create shader program: ${info}`);
         }
 
-        // pull uniforms
-        this.uniforms = {};
+        // uniforms
         const uniformsCount = gl.getProgramParameter(glProgram, gl.ACTIVE_UNIFORMS);
+        const uniformInfos: UniformInfo[] = [];
         for (let u = 0; u < uniformsCount; u++) {
             const info = gl.getActiveUniform(glProgram, u);
             if (info !== null) {
                 const location = gl.getUniformLocation(glProgram, info.name);
                 if (location !== null) {
-                    this.uniforms[info.name] = createUniformHook(gl, info, location);
+                    uniformInfos.push({info, location});
                 }
             }
         }
+        this.uniforms = createUniformHooks(gl, uniformInfos);
 
         // attributes
         this.attributes = {};
-        //vertexPosition: gl.getAttribLocation(glProgram, "aVertexPosition"),
         const attributeCount = gl.getProgramParameter(glProgram, gl.ACTIVE_ATTRIBUTES);
         for (let a = 0; a < attributeCount; a++) {
             const info = gl.getActiveAttrib(glProgram, a);
             if (info !== null) {
                 const location = gl.getAttribLocation(glProgram, info.name);
                 if (location !== null) {
-                    this.attributes[info.name] = location; //createUniformHook(gl, info, location);
+                    this.attributes[info.name] = createAttributeHook(gl, info, location);
                 }
             }
         }
 
         this.glProgram = glProgram;
     }
-    use() {
+    use(): void {
         this.gl.useProgram(this.glProgram);
-        for (const name in this.uniforms) {
-            this.uniforms[name].update();
-        }
     }
-    unuse() {
+    unuse(): void {
         this.gl.useProgram(null);
     }
-    dispose() {
+    update(state: RenderingState): void {
+        for (const name in this.uniforms) {
+            this.uniforms[name].update(state);
+        }
+        for (const name in this.attributes) {
+            this.attributes[name].update(state);
+        }
+    }
+    dispose(): void {
         this.gl.deleteShader(this.glProgram);
         this.vs.dispose();
         this.fs.dispose();

@@ -28,10 +28,10 @@ export class Shader implements Disposable {
 
         this.glShader = glShader;
     }
-    attachProgram(program: WebGLProgram) {
+    attachProgram(program: WebGLProgram): void {
         this.gl.attachShader(program, this.glShader);
     }
-    dispose() {
+    dispose(): void {
         this.gl.deleteShader(this.glShader);
     }
 }

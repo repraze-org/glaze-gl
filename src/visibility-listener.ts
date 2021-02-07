@@ -11,7 +11,7 @@ export class VisibilityListener implements Disposable {
 
         window.addEventListener("visibilitychange", this.update);
     }
-    update = () => {
+    update: () => void = () => {
         const visible = !this.window.document.hidden;
         this.callback(visible);
     };

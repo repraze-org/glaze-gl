@@ -22,19 +22,19 @@ export class Animator implements Disposable {
         this.sizeListener = new SizeListener(container, this.resize);
         this.visibilityListener = new VisibilityListener(window, this.visibility);
     }
-    start() {
+    start(): void {
         if (!this.running) {
             this.running = true;
 
             this.nextFrame = requestAnimationFrame(this.frame);
         }
     }
-    stop() {
+    stop(): void {
         if (!this.running) {
             this.running = false;
         }
     }
-    async setState(state: State) {
+    async setState(state: State): Promise<void> {
         if (state.load !== undefined) {
             await state.load();
         }
@@ -45,7 +45,7 @@ export class Animator implements Disposable {
         this.state = state;
         this.state.begin(this.container);
     }
-    frame = (now: number) => {
+    frame: (now: number) => void = (now) => {
         if (this.running && this.visible) {
             // timing
             const delta = Math.min(this.last === 0 ? 0 : (now - this.last) / 1000, 1);
@@ -59,12 +59,12 @@ export class Animator implements Disposable {
             this.nextFrame = requestAnimationFrame(this.frame);
         }
     };
-    resize = (params: SizeListenerCallbackParameters) => {
+    resize: (params: SizeListenerCallbackParameters) => void = (params) => {
         if (this.running && this.state) {
             this.state.resize(params);
         }
     };
-    visibility = (visible: boolean) => {
+    visibility: (visible: boolean) => void = (visible) => {
         // restart if needed
         if (this.running) {
             if (this.visible && !visible && this.nextFrame) {
@@ -76,7 +76,7 @@ export class Animator implements Disposable {
         }
         this.visible = visible;
     };
-    dispose() {
+    dispose(): void {
         this.sizeListener.dispose();
         this.visibilityListener.dispose();
     }

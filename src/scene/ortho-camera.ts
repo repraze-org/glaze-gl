@@ -1,19 +1,15 @@
-import {Matrix4} from "@math.gl/core";
 import {Camera} from "./camera";
-import {Bound2} from "./math/bound2";
+import {Bound2} from "../math/bound2";
 
-const DEFAULT_VIEWPORT = new Bound2();
+export class OrthoCamera extends Camera {
+    public near: number;
+    public far: number;
 
-export class OrthoCamera implements Camera {
     public left: number;
     public right: number;
     public bottom: number;
     public top: number;
-    public near: number;
-    public far: number;
-    public viewport: Bound2;
 
-    public projection: Matrix4;
     constructor({
         left,
         right,
@@ -21,7 +17,6 @@ export class OrthoCamera implements Camera {
         top,
         near,
         far,
-        viewport = DEFAULT_VIEWPORT,
     }: {
         left: number;
         right: number;
@@ -31,15 +26,16 @@ export class OrthoCamera implements Camera {
         far: number;
         viewport?: Bound2;
     }) {
+        super();
+
         this.left = left;
         this.right = right;
         this.bottom = bottom;
         this.top = top;
         this.near = near;
         this.far = far;
-        this.viewport = viewport;
 
-        this.projection = new Matrix4().ortho({
+        this.projectionMatrix.ortho({
             left,
             right,
             bottom,
@@ -48,8 +44,8 @@ export class OrthoCamera implements Camera {
             far,
         });
     }
-    update() {
-        this.projection.ortho({
+    updateProjection(): void {
+        this.projectionMatrix.ortho({
             left: this.left,
             right: this.right,
             bottom: this.bottom,

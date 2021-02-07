@@ -1,3 +1,5 @@
+import {uuid} from "./utils";
+
 export type TextureSource =
     | ImageBitmap
     | ImageData
@@ -7,7 +9,9 @@ export type TextureSource =
     | OffscreenCanvas;
 
 export class Texture {
-    public image: TextureSource;
+    public readonly id: string;
+
+    public image?: TextureSource;
 
     public wrapS: number;
     public wrapT: number;
@@ -19,7 +23,13 @@ export class Texture {
     public internalFormat: number;
     public type: number;
 
-    constructor(image: TextureSource) {
+    public flipY: boolean;
+
+    public needsUpdate: boolean;
+
+    constructor(image?: TextureSource) {
+        this.id = uuid();
+
         this.image = image;
 
         this.wrapS = 0;
@@ -31,33 +41,9 @@ export class Texture {
         this.format = 0;
         this.internalFormat = 0;
         this.type = 0;
-    }
-}
 
-export class ImageLoader {
-    constructor() {
-        // Empty
-    }
-    async load(src: string): Promise<HTMLImageElement> {
-        const image = new Image();
-        return new Promise<HTMLImageElement>((res, rej) => {
-            image.onload = () => {
-                res(image);
-            };
-            image.onerror = (event) => {
-                rej(new Error(`Could not load image "${src}"`));
-            };
-            image.src = src;
-        });
-    }
-}
+        this.flipY = true;
 
-export class TextureLoader {
-    constructor() {
-        // Empty
-    }
-    async load(src: string): Promise<Texture> {
-        const image = await new ImageLoader().load(src);
-        return new Texture(image);
+        this.needsUpdate = true;
     }
 }

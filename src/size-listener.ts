@@ -24,7 +24,7 @@ export class SizeListener implements Disposable {
         this.height = height;
         this.pixelRatio = window ? window.devicePixelRatio : 1;
     }
-    check() {
+    check(): void {
         const {width, height} = this.element.getBoundingClientRect();
         const pixelRatio = window ? window.devicePixelRatio : 1;
         if (width != this.width || height != this.height || pixelRatio != this.pixelRatio) {

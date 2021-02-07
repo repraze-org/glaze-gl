@@ -5,10 +5,10 @@ export class ShaderLibrary {
         this.bindings = new Map<string, string>();
         this.links = links;
     }
-    set(name: string, source: string) {
+    set(name: string, source: string): void {
         this.bindings.set(name, source);
     }
-    get(name: string, source: string) {
+    get(name: string): string | undefined {
         return this.bindings.get(name);
     }
     delete(name: string): boolean {
