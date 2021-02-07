@@ -32,13 +32,13 @@ function isPointLight(object: SceneObject): object is PointLight {
 
 const OUTPUT_PROJECTION = new Matrix4().ortho({left: -0.5, right: 0.5, top: 0.5, bottom: -0.5, near: -0.1, far: 0.1});
 
-const OUTPUT_VERTEX_SHADER = `
-attribute vec4 aVertex;
-attribute vec2 aUv;
-
+const OUTPUT_VERTEX_SHADER = `#version 300 es
 uniform mat4 uOutputProjection;
 
-varying vec2 vPosition;
+in vec4 aVertex;
+in vec2 aUv;
+
+out vec2 vPosition;
 
 void main() {
     vPosition = aUv;
@@ -46,19 +46,21 @@ void main() {
 }
 `;
 
-const OUTPUT_FRAGMENT_SHADER = `
+const OUTPUT_FRAGMENT_SHADER = `#version 300 es
 precision highp float;
 
 uniform sampler2D uInput;
 
-varying vec2 vPosition;
+in vec2 vPosition;
+
+layout (location = 0) out vec4 oColor;
 
 void main() {
-    gl_FragColor = texture2D(uInput, vPosition);
+    oColor = texture(uInput, vPosition);
 }
 `;
 
-const AMBIENT_FRAGMENT_SHADER = `
+const AMBIENT_FRAGMENT_SHADER = `#version 300 es
 precision highp float;
 
 uniform sampler2D uColor;
@@ -66,15 +68,17 @@ uniform sampler2D uColor;
 uniform vec3 uLightColor;
 uniform float uLightIntensity;
 
-varying vec2 vPosition;
+in vec2 vPosition;
+
+layout (location = 0) out vec4 oColor;
 
 void main() {
-    vec3 color = texture2D(uColor, vPosition).xyz;
-    gl_FragColor = vec4(uLightColor * uLightIntensity * color, 1.0);
+    vec3 color = texture(uColor, vPosition).xyz;
+    oColor = vec4(uLightColor * uLightIntensity * color, 1.0);
 }
 `;
 
-const POINT_FRAGMENT_SHADER = `
+const POINT_FRAGMENT_SHADER = `#version 300 es
 precision highp float;
 
 uniform mat4 uProjectionViewInvert;
@@ -89,23 +93,21 @@ uniform vec3 uLightColor;
 uniform float uLightIntensity;
 uniform float uLightDecay;
 
-varying vec2 vPosition;
+in vec2 vPosition;
+
+layout (location = 0) out vec4 oColor;
 
 vec3 toWorldPosition(vec2 screen, float depth, mat4 projectionViewInvert) {
-    // vec4 clipSpaceLocation;
-    // clipSpaceLocation.xy = screen * 2.0 - 1.0;
-    // clipSpaceLocation.z = depth * 2.0 - 1.0;
-    // clipSpaceLocation.w = 1.0;
     vec4 clipSpaceLocation = vec4(screen * 2.0 - 1.0, depth * 2.0 - 1.0, 1.0);
     vec4 homogenousLocation = projectionViewInvert * clipSpaceLocation;
     return homogenousLocation.xyz / homogenousLocation.w;
 }
 
 void main() {
-    vec3 color = texture2D(uColor, vPosition).xyz;
-    vec3 normal = (texture2D(uNormal, vPosition).xyz) * 2.0 - 1.0;
-    float depth = texture2D(uDepth, vPosition).x;
-    // float depth = texture2D(uNormal, vPosition).w;
+    vec3 color = texture(uColor, vPosition).xyz;
+    vec3 normal = (texture(uNormal, vPosition).xyz) * 2.0 - 1.0;
+    float depth = texture(uDepth, vPosition).x;
+    // float depth = texture(uNormal, vPosition).w * 2.0 - 1.0;
     
     vec3 position = vec3(0.0);
     if(depth < 1.0){
@@ -117,8 +119,8 @@ void main() {
     float distance = distance(position, uLightPosition);
     float attenuation = 1.0 / (distance * distance);
 
-    gl_FragColor = vec4(uLightColor * uLightIntensity * cosTheta * attenuation * color, 1.0);
-    // gl_FragColor = vec4(position, 1.0);
+    oColor = vec4(uLightColor * uLightIntensity * cosTheta * attenuation * color, 1.0);
+    // oColor = vec4(position, 1.0);
 }
 `;
 
@@ -160,24 +162,19 @@ export class ScenePass extends RenderPass {
         this.directionalLights = [];
         this.pointLights = [];
 
-        // standard out
-        const drawBuffers = gl.getExtension("WEBGL_draw_buffers"); // for multiple attachments
-        if (drawBuffers === null) {
-            throw new Error("WEBGL_draw_buffers extension not supported");
-        }
-
         this.outputBuffer = new FrameBuffer();
         this.output = this.createRenderTexture(gl.RGBA, gl.UNSIGNED_BYTE);
         this.outputBuffer.setAttachment(gl.COLOR_ATTACHMENT0, this.output);
 
         this.meshesBuffer = new FrameBuffer();
         this.color = this.createRenderTexture(gl.RGBA, gl.UNSIGNED_BYTE);
-        this.meshesBuffer.setAttachment(drawBuffers.COLOR_ATTACHMENT0_WEBGL, this.color);
+        this.meshesBuffer.setAttachment(gl.COLOR_ATTACHMENT0, this.color);
         this.normal = this.createRenderTexture(gl.RGBA, gl.UNSIGNED_BYTE);
-        this.meshesBuffer.setAttachment(drawBuffers.COLOR_ATTACHMENT1_WEBGL, this.normal);
+        this.meshesBuffer.setAttachment(gl.COLOR_ATTACHMENT1, this.normal);
         this.depth = this.createRenderTexture(gl.DEPTH_COMPONENT, gl.UNSIGNED_SHORT);
+        this.depth.internalFormat = gl.DEPTH_COMPONENT16;
         this.meshesBuffer.setAttachment(gl.DEPTH_ATTACHMENT, this.depth);
-        this.meshesBuffer.setDrawBuffers([drawBuffers.COLOR_ATTACHMENT0_WEBGL, drawBuffers.COLOR_ATTACHMENT1_WEBGL]);
+        this.meshesBuffer.setDrawBuffers([gl.COLOR_ATTACHMENT0, gl.COLOR_ATTACHMENT1]);
 
         this.accumulationBuffer = new FrameBuffer();
         this.accumulation = this.createRenderTexture(gl.RGBA, gl.UNSIGNED_BYTE);

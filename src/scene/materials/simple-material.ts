@@ -5,19 +5,17 @@ import {Camera} from "../camera";
 import {Mesh} from "../mesh";
 import {Material} from "./material";
 
-const VERTEX_SHADER = `
+const VERTEX_SHADER = `#version 300 es
 uniform mat4 uProjectionMatrix;
 uniform mat4 uModelViewMatrix;
 uniform mat4 uNormalMatrix;
 
-attribute vec4 aVertex;
-attribute vec2 aUv;
-attribute vec4 aNormal;
+in vec4 aVertex;
+in vec2 aUv;
+in vec4 aNormal;
 
-varying vec2 vUv;
-varying vec4 vNormal;
-
-// vec3 pack() {}
+out vec2 vUv;
+out vec4 vNormal;
 
 void main() {
     vUv = aUv;
@@ -26,24 +24,27 @@ void main() {
 }
 `;
 
-const FRAGMENT_SHADER = `
-#extension GL_EXT_draw_buffers : require
+const FRAGMENT_SHADER = `#version 300 es
 precision highp float;
 
 uniform vec3 uColor;
 uniform bool uEnableMap;
 uniform sampler2D uMap;
 
-varying vec2 vUv;
-varying vec4 vNormal;
+in vec2 vUv;
+in vec4 vNormal;
+in vec4 vPosition;
+
+layout (location = 0) out vec4 oColor;
+layout (location = 1) out vec4 oNormal;
 
 void main(){
     vec3 color = uColor;
     if(uEnableMap) {
-        color *= texture2D(uMap, vUv).xyz;
+        color *= texture(uMap, vUv).xyz;
     }
-    gl_FragData[0] = vec4(color, 1.0);
-    gl_FragData[1] = vNormal;
+    oColor = vec4(color, 1.0);
+    oNormal = vNormal;
 }
 `;
 
@@ -52,7 +53,6 @@ export class SimpleMaterial extends Material {
     public map?: Texture; // TODO: rename map
 
     constructor(gl: WebGLRenderingContext) {
-        gl.getExtension("EXT_frag_depth"); // TODO: remove when packing depth into normal texture
         super(new ShaderProgram(gl, {vs: VERTEX_SHADER, fs: FRAGMENT_SHADER}));
         this.color = new Color(0xffffff);
     }

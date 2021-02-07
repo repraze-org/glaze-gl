@@ -1,3 +1,4 @@
+import {CLAMP_TO_EDGE, LINEAR, RGBA, UNSIGNED_BYTE} from "./constants";
 import {uuid} from "./utils";
 
 export type TextureSource =
@@ -32,15 +33,15 @@ export class Texture {
 
         this.image = image;
 
-        this.wrapS = 0;
-        this.wrapT = 0;
+        this.wrapS = CLAMP_TO_EDGE;
+        this.wrapT = CLAMP_TO_EDGE;
 
-        this.minFilter = 0;
-        this.magFilter = 0;
+        this.minFilter = LINEAR;
+        this.magFilter = LINEAR;
 
-        this.format = 0;
-        this.internalFormat = 0;
-        this.type = 0;
+        this.format = RGBA;
+        this.internalFormat = RGBA;
+        this.type = UNSIGNED_BYTE;
 
         this.flipY = true;
 

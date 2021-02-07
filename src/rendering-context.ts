@@ -14,7 +14,7 @@ export class RenderingContext {
     public pixelRatio: number;
     public viewport: RenderViewport;
 
-    public gl: WebGLRenderingContext;
+    public gl: WebGL2RenderingContext;
     public state: RenderingState;
 
     constructor({width = 256, height = 256, pixelRatio = window.devicePixelRatio} = {}) {
@@ -26,9 +26,9 @@ export class RenderingContext {
         this.viewport = {x: 0, y: 0, width: 1, height: 1};
         this.updateSize();
 
-        const gl = this.component.getContext("webgl");
+        const gl = this.component.getContext("webgl2");
         if (gl === null) {
-            throw new Error("Could not init WebGL context");
+            throw new Error("Could not init WebGL2 context");
         }
         this.gl = gl;
         this.state = new RenderingState(gl);
