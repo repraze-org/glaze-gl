@@ -5,10 +5,12 @@ export abstract class Camera extends SceneObject {
     public projectionMatrix: Matrix4;
     // calculated matrix
     public viewMatrix: Matrix4;
+    public projectionViewMatrixInverse: Matrix4;
 
     constructor() {
         super(SceneObjectType.OTHER);
         this.projectionMatrix = new Matrix4();
         this.viewMatrix = new Matrix4();
+        this.projectionViewMatrixInverse = new Matrix4();
     }
 }

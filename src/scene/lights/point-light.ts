@@ -1,6 +1,6 @@
-import {Color} from "../../color";
-import {SceneObjectType} from "../scene-object";
 import {Light} from "./light";
+import {SceneObjectType} from "../scene-object";
+import {Color} from "../../color";
 
 export class PointLight extends Light {
     public color: Color;

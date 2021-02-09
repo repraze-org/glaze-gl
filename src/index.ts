@@ -26,6 +26,7 @@ export {Material} from "./scene/materials/material";
 export {SimpleMaterial} from "./scene/materials/simple-material";
 export {Light} from "./scene/lights/light";
 export {AmbientLight} from "./scene/lights/ambient-light";
+export {DirectionalLight} from "./scene/lights/directional-light";
 export {PointLight} from "./scene/lights/point-light";
 export {Group} from "./scene/group";
 
